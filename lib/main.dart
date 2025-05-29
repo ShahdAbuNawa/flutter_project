@@ -15,7 +15,29 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyFormScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const MyFormScreen(),
+        '/output': (context) => const OutputScreen(), // OutputScreen must have a const constructor or handle arguments via settings
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/output') {
+          final args = settings.arguments as Map<String, dynamic>;
+          return MaterialPageRoute(
+            builder: (context) => OutputScreen(
+              username: args['username'],
+              password: args['password'],
+              email: args['email'],
+              rememberMe: args['rememberMe'],
+              gender: args['gender'],
+              country: args['country'],
+              age: args['age'],
+              selectedDate: args['selectedDate'],
+            ),
+          );
+        }
+        return null;
+      },
     );
   }
 }
@@ -44,20 +66,19 @@ class _MyFormScreenState extends State<MyFormScreen> {
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      Navigator.push(
+      Navigator.pushNamed(
         context,
-        MaterialPageRoute(
-          builder: (context) => OutputScreen(
-            username: _username,
-            password: _password,
-            email: _email,
-            rememberMe: _rememberMe,
-            gender: _gender,
-            country: _country,
-            age: _age,
-            selectedDate: _selectedDate,
-          ),
-        ),
+        '/output',
+        arguments: {
+          'username': _username,
+          'password': _password,
+          'email': _email,
+          'rememberMe': _rememberMe,
+          'gender': _gender,
+          'country': _country,
+          'age': _age,
+          'selectedDate': _selectedDate,
+        },
       );
     }
   }
@@ -262,4 +283,3 @@ class _MyFormScreenState extends State<MyFormScreen> {
     );
   }
 }
-
